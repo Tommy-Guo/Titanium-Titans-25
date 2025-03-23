@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -80,37 +79,27 @@ public class RobotContainer {
                 DriverStation.silenceJoystickConnectionWarning(true);
         }
 
+        private SequentialCommandGroup safeElevatorMove(double Level) {
+                return new SequentialCommandGroup(new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
+                                new MoveElevatorToSetpoint(s_ElevatorSubsystem, Level));
+        }
+
         private void configureBindings() {
-                Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
+                // Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
                 Command testDrive = drivebase.driveFieldOriented(driveRobotOriented);
 
                 drivebase.setDefaultCommand(testDrive);
                 if (s_ElevatorSubsystem != null) {
                         driverXbox.start().onTrue(
-                                        new SequentialCommandGroup(
-                                                        new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
-                                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem,
-                                                                        ElevatorConstants.kLevel0)));
+                                        safeElevatorMove(ElevatorConstants.kLevel0));
                         driverXbox.x().onTrue(
-                                        new SequentialCommandGroup(
-                                                        new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
-                                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem,
-                                                                        ElevatorConstants.kLevel1)));
+                                        safeElevatorMove(ElevatorConstants.kLevel1));
                         driverXbox.y().onTrue(
-                                        new SequentialCommandGroup(
-                                                        new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
-                                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem,
-                                                                        ElevatorConstants.kLevel2)));
+                                        safeElevatorMove(ElevatorConstants.kLevel2));
                         driverXbox.b().onTrue(
-                                        new SequentialCommandGroup(
-                                                        new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
-                                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem,
-                                                                        ElevatorConstants.kLevel3)));
+                                        safeElevatorMove(ElevatorConstants.kLevel3));
                         driverXbox.a().onTrue(
-                                        new SequentialCommandGroup(
-                                                        new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
-                                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem,
-                                                                        ElevatorConstants.kLevel4)));
+                                        safeElevatorMove(ElevatorConstants.kLevel4));
                 }
 
                 if (s_IntakeSubsystem != null) {
