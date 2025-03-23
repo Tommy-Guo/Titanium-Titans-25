@@ -16,7 +16,6 @@ public class IntakeSubsystem extends SubsystemBase {
     private SparkMax m_intake1 = new SparkMax(34, MotorType.kBrushless);
     private SparkMax m_intake2 = new SparkMax(33, MotorType.kBrushless);
 
-    /** Creates a new ElevatorSubsystem. */
     public IntakeSubsystem() {
 
         m_intake1.configure(

@@ -24,6 +24,7 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import java.io.File;
 import swervelib.SwerveInputStream;
 import frc.robot.commands.ArmMoveCommand;
+import frc.robot.commands.ArmWheelSpinCommand;
 import frc.robot.commands.MoveElevatorToSetpoint;
 import frc.robot.commands.MoveIntakeCommand;
 import frc.robot.commands.TimedDriveCommand;
@@ -32,36 +33,29 @@ public class RobotContainer {
 
         final CommandXboxController driverXbox = new CommandXboxController(0);
         final CommandXboxController operatorXbox = new CommandXboxController(1);
-        private ElevatorSubsystem s_ElevatorSubsystem = null;
-        private IntakeSubsystem s_IntakeSubsystem = null;
+        private ElevatorSubsystem s_ElevatorSubsystem = new ElevatorSubsystem();
+        private IntakeSubsystem s_IntakeSubsystem = new IntakeSubsystem();
         private ArmSubsystem s_ArmSubsystem = new ArmSubsystem();
 
         private final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(),
                         "swerve/neo"));
 
+        private String m_autoSelected;
+        private final SendableChooser<String> m_chooser = new SendableChooser<>();
         private static final String auto_None = "No auto";
         private static final String auto_TaxiOut = "Taxi Out";
         private static final String auto_Level1 = "Score Level 1";
         private static final String auto_Level2 = "Score Level 2";
         private static final String auto_Level3 = "Score Level 3";
         private static final String auto_Level4 = "Score Level 4";
-        private String m_autoSelected;
-        private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-        SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(),
+        SwerveInputStream driveRobotOriented = SwerveInputStream.of(drivebase.getSwerveDrive(),
                         () -> driverXbox.getLeftY() * 0.75,
                         () -> driverXbox.getLeftX() * 0.75)
                         .withControllerRotationAxis(() -> driverXbox.getRightX() * -0.5)
                         .deadband(OperatorConstants.DEADBAND)
                         .scaleTranslation(0.8)
-                        .allianceRelativeControl(true);
-
-        SwerveInputStream driveDirectAngle = driveAngularVelocity.copy()
-                        .withControllerHeadingAxis(driverXbox::getRightX,
-                                        driverXbox::getRightY)
-                        .headingWhile(true);
-
-        SwerveInputStream driveRobotOriented = driveAngularVelocity.copy().robotRelative(true)
+                        .robotRelative(true)
                         .allianceRelativeControl(false);
 
         public RobotContainer() {
@@ -75,7 +69,6 @@ public class RobotContainer {
                 SmartDashboard.putData("Auto choices", m_chooser);
 
                 configureBindings();
-
                 DriverStation.silenceJoystickConnectionWarning(true);
         }
 
@@ -85,7 +78,6 @@ public class RobotContainer {
         }
 
         private void configureBindings() {
-                // Command driveFieldOrientedAnglularVelocity = drivebase.driveFieldOriented(driveAngularVelocity);
                 Command testDrive = drivebase.driveFieldOriented(driveRobotOriented);
 
                 drivebase.setDefaultCommand(testDrive);
@@ -116,34 +108,28 @@ public class RobotContainer {
                         }));
                 }
 
-                // operatorXbox.x().onTrue(new InstantCommand(() -> {
-                // new ArmMoveCommand(s_ArmSubsystem, 0.3).schedule();
-                // })).onFalse(new InstantCommand(() -> {
-                // new ArmMoveCommand(s_ArmSubsystem, 0).schedule();
-                // }));
-                // operatorXbox.b().onTrue(new InstantCommand(() -> {
-                // new ArmMoveCommand(s_ArmSubsystem, -0.3).schedule();
-                // })).onFalse(new InstantCommand(() -> {
-                // new ArmMoveCommand(s_ArmSubsystem, 0).schedule();
-                // }));
+                if (s_ArmSubsystem != null) {
+                        operatorXbox.x().onTrue(new InstantCommand(() -> {
+                                new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe);
+                        }));
+                        operatorXbox.b().onTrue(new InstantCommand(() -> {
+                                new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armDown);
+                        }));
 
-                // operatorXbox.y().onTrue(new InstantCommand(() -> {
-                // new ArmWheelSpinCommand(s_ArmSubsystem, 0.3).schedule();
-                // })).onFalse(new InstantCommand(() -> {
-                // new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
-                // }));
-                // operatorXbox.a().onTrue(new InstantCommand(() -> {
-                // new ArmWheelSpinCommand(s_ArmSubsystem, -0.3).schedule();
-                // })).onFalse(new InstantCommand(() -> {
-                // new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
-                // }));
+                        operatorXbox.y().onTrue(new InstantCommand(() -> {
+                                new ArmWheelSpinCommand(s_ArmSubsystem, 0.3).schedule();
+                        })).onFalse(new InstantCommand(() -> {
+                                new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
+                        }));
+                        operatorXbox.a().onTrue(new InstantCommand(() -> {
+                                new ArmWheelSpinCommand(s_ArmSubsystem, -0.3).schedule();
+                        })).onFalse(new InstantCommand(() -> {
+                                new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
+                        }));
+                }
+
         }
 
-        /**
-         * Use this to pass the autonomous command to the main {@link Robot} class.
-         *
-         * @return the command to run in autonomous
-         */
         public Command getAutonomousCommand() {
                 m_autoSelected = m_chooser.getSelected();
                 switch (m_autoSelected) {
