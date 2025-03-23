@@ -33,6 +33,7 @@ public class ArmSubsystem extends SubsystemBase {
                 Configs.ArmSubsystem.wheelMotor,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
+                
         m_ArmEncoder.setPosition(0);
 
     }

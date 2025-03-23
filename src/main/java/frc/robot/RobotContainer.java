@@ -148,24 +148,6 @@ public class RobotContainer {
                 // })).onFalse(new InstantCommand(() -> {
                 // new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
                 // }));
-
-                // // operatorXbox.back().onTrue(new InstantCommand(() -> {
-                // new MoveArmCommand(s_ArmSubsystem, 0).schedule();
-                // }));
-
-                // s_ArmSubsystem.setDefaultCommand(new
-                // ControlWheelsWithJoystickCommand(s_ArmSubsystem, operatorXbox));
-                // s_ArmSubsystem.setDefaultCommand(new
-                // ControlArmWithJoystickCommand(s_ArmSubsystem, operatorXbox));
-
-                // operatorXbox.a().onTrue(new SequentialCommandGroup(
-                // new MoveElevatorToSetpoint(s_ElevatorSubsystem, ElevatorConstants.kLevel4),
-                // new MoveIntakeCommand(s_IntakeSubsystem, 0.3)));
-
-                // driverXbox.povRight().onTrue(new AlignToReefTagRelative(true,
-                // drivebase).withTimeout(7));
-                // driverXbox.povLeft().onTrue(new AlignToReefTagRelative(false,
-                // drivebase).withTimeout(7));
         }
 
         /**
@@ -204,11 +186,15 @@ public class RobotContainer {
                                                 new MoveIntakeCommand(s_IntakeSubsystem, -0.2));
                         case auto_Level4:
                                 return new SequentialCommandGroup(
-                                                new TimedDriveCommand(drivebase, new Translation2d(0.7, 0), 3),
+                                                new TimedDriveCommand(drivebase, new Translation2d(0.7, 0), 2.9),
                                                 new MoveElevatorToSetpoint(s_ElevatorSubsystem,
                                                                 ElevatorConstants.kLevel4),
                                                 new WaitCommand(1),
-                                                new MoveIntakeCommand(s_IntakeSubsystem, -0.2));
+                                                new MoveIntakeCommand(s_IntakeSubsystem, -0.2),
+                                                new WaitCommand(1),
+                                                new MoveElevatorToSetpoint(s_ElevatorSubsystem,
+                                                                ElevatorConstants.kLevel0),
+                                                new TimedDriveCommand(drivebase, new Translation2d(-0.3, 0), 2));
                         default:
                                 return null;
                 }
