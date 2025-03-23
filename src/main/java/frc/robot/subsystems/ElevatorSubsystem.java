@@ -83,9 +83,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
-    SmartDashboard.putNumber("Desired: ", ElevatorConstants.kLevel4);
-    SmartDashboard.putNumber("elevator 1 encoder: ", getElevator1Position());
-    SmartDashboard.putNumber("elevator 2 encoder: ", getElevator2Position());
+    
   }
 }

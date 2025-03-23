@@ -20,7 +20,7 @@ public class ArmWheelSpinCommand extends Command {
 
     @Override
     public void end(boolean interrupted) {
-        s_ArmSubsystem.stop();
+        s_ArmSubsystem.stopSpin();
     }
 
     @Override

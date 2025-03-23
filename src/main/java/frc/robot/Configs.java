@@ -102,6 +102,16 @@ public class Configs {
 
                 }
 
+                public static final SparkMaxConfig wheelMotor = new SparkMaxConfig();
+                static {
+                        wheelMotor
+                                        .idleMode(IdleMode.kBrake)
+                                        .smartCurrentLimit(50)
+                                        .voltageCompensation(12)
+                                        .inverted(true);
+
+                }
+
         }
 
 }

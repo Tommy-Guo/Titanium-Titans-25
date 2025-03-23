@@ -67,6 +67,15 @@ public final class Constants {
     public static final double kLevel4 = 235;
   }
 
+  public static final class ArmConstants {
+    
+    public static final int kArmCanId = 33;
+    public static final int kWheelsCanId = 34;
+
+    public static final double armSafe = 0;
+    public static final double armUse = 0;  
+  }
+
   public static final double X_REEF_ALIGNMENT_P = 3.3;
   public static final double Y_REEF_ALIGNMENT_P = 3.3;
   public static final double ROT_REEF_ALIGNMENT_P = 0.058;
