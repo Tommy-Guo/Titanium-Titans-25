@@ -24,7 +24,7 @@ public class Configs {
                                         .p(0.2)
                                         .outputRange(-1, 1).maxMotion
                                         .maxVelocity(6000)
-                                        .maxAcceleration(8000)
+                                        .maxAcceleration(8500)
                                         .allowedClosedLoopError(0.5);
 
                         // elevator1Config.closedLoop
@@ -46,7 +46,7 @@ public class Configs {
                                         .p(0.2)
                                         .outputRange(-1, 1).maxMotion
                                         .maxVelocity(6000)
-                                        .maxAcceleration(8000)
+                                        .maxAcceleration(8500)
                                         .allowedClosedLoopError(0.5);
 
                         // elevator2Config.closedLoop

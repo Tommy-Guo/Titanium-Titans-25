@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -24,12 +25,12 @@ public class ArmSubsystem extends SubsystemBase {
     private static final double MAX_POSITION = 100.0; // Example max limit, adjust as needed
     private static final double MIN_POSITION = 0.0; // Min limit
 
-    private SparkMax m_Arm = new SparkMax(ElevatorConstants.kElevator1CanId, MotorType.kBrushless);
-    private SparkClosedLoopController m_ArmController = m_Arm.getClosedLoopController();
-    private RelativeEncoder m_ArmEncoder = m_Arm.getEncoder();
+    private SparkFlex m_Arm = new SparkFlex(56, MotorType.kBrushless);
+    // private SparkClosedLoopController m_ArmController = m_Arm.getClosedLoopController();
+    // private RelativeEncoder m_ArmEncoder = m_Arm.getEncoder();
 
     // Setup the second Elevator Motor
-    private SparkMax m_Wheels = new SparkMax(ElevatorConstants.kElevator2CanId, MotorType.kBrushless);
+    private SparkMax m_Wheels = new SparkMax(51, MotorType.kBrushless);
 
     /** Creates a new ElevatorSubsystem. */
     public ArmSubsystem() {
@@ -38,32 +39,36 @@ public class ArmSubsystem extends SubsystemBase {
                 Configs.ElevatorSubsystem.elevator1Config,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-        m_ArmEncoder.setPosition(0);
+        // m_ArmEncoder.setPosition(0);
 
     }
 
     public void move(double speed) {
-        double currentPosition = m_ArmEncoder.getPosition();
-        if ((currentPosition <= MIN_POSITION && speed < 0) || (currentPosition >= MAX_POSITION && speed > 0)) {
-            m_Arm.set(0); // Stop the motor if it exceeds bounds
-        } else {
-            m_Arm.set(speed);
-            holdPosition = currentPosition; // Update hold position
-        }
+        // double currentPosition = m_ArmEncoder.getPosition();
+        // if ((currentPosition <= MIN_POSITION && speed < 0) || (currentPosition >= MAX_POSITION && speed > 0)) {
+        //     m_Arm.set(0); // Stop the motor if it exceeds bounds
+        // } else {
+        //     m_Arm.set(speed);
+        //     holdPosition = currentPosition; // Update hold position
+        // }
+    }
+
+    public void armMove(double speed) {
+        m_Arm.set(speed);
     }
 
     public void spin(double speed) {
         m_Wheels.set(speed);
     }
 
-    public void moveElevatorToPosition(double Setpoint) {
-        m_ArmController.setReference(Setpoint, ControlType.kMAXMotionPositionControl);
-    }
+    // public void moveToPos(double Setpoint) {
+    //     m_ArmController.setReference(Setpoint, ControlType.kMAXMotionPositionControl);
+    // }
 
     // Get the position of Elevator Motor 1
-    public double getArmPosition() {
-        return m_ArmEncoder.getPosition();
-    }
+    // public double getArmPosition() {
+    //     return m_ArmEncoder.getPosition();
+    // }
 
     // Stop the Elevator Motors
     public void stop() {
@@ -72,12 +77,16 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void holdPosition() {
-        m_ArmController.setReference(holdPosition, ControlType.kMAXMotionPositionControl);
+        // m_ArmController.setReference(holdPosition, ControlType.kMAXMotionPositionControl);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Arm Position", m_ArmEncoder.getPosition());
-        holdPosition();
+        // SmartDashboard.putNumber("Arm Position", m_ArmEncoder.getPosition());
+        // holdPosition();
+    }
+
+    public double map(double x, double in_min, double in_max, double out_min, double out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_max;
     }
 }
