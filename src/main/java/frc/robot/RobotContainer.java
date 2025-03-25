@@ -31,8 +31,8 @@ import frc.robot.commands.TimedDriveCommand;
 
 public class RobotContainer {
 
-        final CommandXboxController driverXbox = new CommandXboxController(0);
-        final CommandXboxController operatorXbox = new CommandXboxController(1);
+        final CommandXboxController driver_controller = new CommandXboxController(0);
+        final CommandXboxController driver_operator = new CommandXboxController(1);
         private ElevatorSubsystem s_ElevatorSubsystem = new ElevatorSubsystem();
         private IntakeSubsystem s_IntakeSubsystem = new IntakeSubsystem();
         private ArmSubsystem s_ArmSubsystem = new ArmSubsystem();
@@ -50,9 +50,9 @@ public class RobotContainer {
         private static final String auto_Level4 = "Score Level 4";
 
         SwerveInputStream driveRobotOriented = SwerveInputStream.of(drivebase.getSwerveDrive(),
-                        () -> driverXbox.getLeftY() * 0.75,
-                        () -> driverXbox.getLeftX() * 0.75)
-                        .withControllerRotationAxis(() -> driverXbox.getRightX() * -0.5)
+                        () -> driver_controller.getLeftY() * 0.75,
+                        () -> driver_controller.getLeftX() * 0.75)
+                        .withControllerRotationAxis(() -> driver_controller.getRightX() * -0.5)
                         .deadband(OperatorConstants.DEADBAND)
                         .scaleTranslation(0.8)
                         .robotRelative(true)
@@ -82,26 +82,26 @@ public class RobotContainer {
 
                 drivebase.setDefaultCommand(testDrive);
                 if (s_ElevatorSubsystem != null) {
-                        driverXbox.start().onTrue(
+                        driver_controller.start().onTrue(
                                         safeElevatorMove(ElevatorConstants.kLevel0));
-                        driverXbox.x().onTrue(
+                        driver_controller.x().onTrue(
                                         safeElevatorMove(ElevatorConstants.kLevel1));
-                        driverXbox.y().onTrue(
+                        driver_controller.y().onTrue(
                                         safeElevatorMove(ElevatorConstants.kLevel2));
-                        driverXbox.b().onTrue(
+                        driver_controller.b().onTrue(
                                         safeElevatorMove(ElevatorConstants.kLevel3));
-                        driverXbox.a().onTrue(
+                        driver_controller.a().onTrue(
                                         safeElevatorMove(ElevatorConstants.kLevel4));
                 }
 
                 if (s_IntakeSubsystem != null) {
-                        driverXbox.leftBumper().onTrue(new InstantCommand(() -> {
+                        driver_controller.leftBumper().onTrue(new InstantCommand(() -> {
                                 new MoveIntakeCommand(s_IntakeSubsystem, 0.4).schedule();
                         })).onFalse(new InstantCommand(() -> {
                                 new MoveIntakeCommand(s_IntakeSubsystem, 0).schedule();
                         }));
 
-                        driverXbox.rightBumper().onTrue(new InstantCommand(() -> {
+                        driver_controller.rightBumper().onTrue(new InstantCommand(() -> {
                                 new MoveIntakeCommand(s_IntakeSubsystem, -0.4).schedule();
                         })).onFalse(new InstantCommand(() -> {
                                 new MoveIntakeCommand(s_IntakeSubsystem, 0).schedule();
@@ -109,19 +109,19 @@ public class RobotContainer {
                 }
 
                 if (s_ArmSubsystem != null) {
-                        operatorXbox.x().onTrue(new InstantCommand(() -> {
+                        driver_operator.x().onTrue(new InstantCommand(() -> {
                                 new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe);
                         }));
-                        operatorXbox.b().onTrue(new InstantCommand(() -> {
+                        driver_operator.b().onTrue(new InstantCommand(() -> {
                                 new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armDown);
                         }));
 
-                        operatorXbox.y().onTrue(new InstantCommand(() -> {
+                        driver_operator.y().onTrue(new InstantCommand(() -> {
                                 new ArmWheelSpinCommand(s_ArmSubsystem, 0.3).schedule();
                         })).onFalse(new InstantCommand(() -> {
                                 new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
                         }));
-                        operatorXbox.a().onTrue(new InstantCommand(() -> {
+                        driver_operator.a().onTrue(new InstantCommand(() -> {
                                 new ArmWheelSpinCommand(s_ArmSubsystem, -0.3).schedule();
                         })).onFalse(new InstantCommand(() -> {
                                 new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
