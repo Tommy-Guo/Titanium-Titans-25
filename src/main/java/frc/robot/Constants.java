@@ -42,6 +42,6 @@ public final class Constants {
     public static final int kWheelsCanId = 56;
 
     public static final double armSafe = 0;
-    public static final double armDown = 0;  
+    public static final double armDown = 15;  
   }
 }

@@ -32,7 +32,7 @@ import frc.robot.commands.TimedDriveCommand;
 public class RobotContainer {
 
         final CommandXboxController driver_controller = new CommandXboxController(0);
-        final CommandXboxController driver_operator = new CommandXboxController(1);
+        final CommandXboxController operator_controller = new CommandXboxController(1);
         private ElevatorSubsystem s_ElevatorSubsystem = new ElevatorSubsystem();
         private IntakeSubsystem s_IntakeSubsystem = new IntakeSubsystem();
         private ArmSubsystem s_ArmSubsystem = new ArmSubsystem();
@@ -91,7 +91,9 @@ public class RobotContainer {
                         driver_controller.b().onTrue(
                                         safeElevatorMove(ElevatorConstants.kLevel3));
                         driver_controller.a().onTrue(
-                                        safeElevatorMove(ElevatorConstants.kLevel4));
+                                        new SequentialCommandGroup(
+                                                        safeElevatorMove(190),
+                                                        safeElevatorMove(ElevatorConstants.kLevel4)));
                 }
 
                 if (s_IntakeSubsystem != null) {
@@ -108,26 +110,21 @@ public class RobotContainer {
                         }));
                 }
 
-                if (s_ArmSubsystem != null) {
-                        driver_operator.x().onTrue(new InstantCommand(() -> {
-                                new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe);
-                        }));
-                        driver_operator.b().onTrue(new InstantCommand(() -> {
-                                new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armDown);
-                        }));
+                operator_controller.y().onTrue(
+                                new SequentialCommandGroup(new ArmMoveCommand(s_ArmSubsystem, 0)));
+                operator_controller.a().onTrue(
+                                new SequentialCommandGroup(new ArmMoveCommand(s_ArmSubsystem, 10)));
 
-                        driver_operator.y().onTrue(new InstantCommand(() -> {
-                                new ArmWheelSpinCommand(s_ArmSubsystem, 0.3).schedule();
-                        })).onFalse(new InstantCommand(() -> {
-                                new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
-                        }));
-                        driver_operator.a().onTrue(new InstantCommand(() -> {
-                                new ArmWheelSpinCommand(s_ArmSubsystem, -0.3).schedule();
-                        })).onFalse(new InstantCommand(() -> {
-                                new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
-                        }));
-                }
-
+                operator_controller.x().onTrue(new InstantCommand(() -> {
+                        new ArmWheelSpinCommand(s_ArmSubsystem, 0.3).schedule();
+                })).onFalse(new InstantCommand(() -> {
+                        new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
+                }));
+                operator_controller.b().onTrue(new InstantCommand(() -> {
+                        new ArmWheelSpinCommand(s_ArmSubsystem, -0.3).schedule();
+                })).onFalse(new InstantCommand(() -> {
+                        new ArmWheelSpinCommand(s_ArmSubsystem, 0).schedule();
+                }));
         }
 
         public Command getAutonomousCommand() {

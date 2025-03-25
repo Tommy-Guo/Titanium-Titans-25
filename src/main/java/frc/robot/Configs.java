@@ -21,10 +21,10 @@ public class Configs {
 
                         elevator1Config.closedLoop
                                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                                        .p(0.2)
+                                        .p(0.22)
                                         .outputRange(-1, 1).maxMotion
                                         .maxVelocity(6000)
-                                        .maxAcceleration(8500)
+                                        .maxAcceleration(7000)
                                         .allowedClosedLoopError(0.5);
 
                         // elevator1Config.closedLoop
@@ -43,10 +43,10 @@ public class Configs {
 
                         elevator2Config.closedLoop
                                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-                                        .p(0.2)
+                                        .p(0.22)
                                         .outputRange(-1, 1).maxMotion
                                         .maxVelocity(6000)
-                                        .maxAcceleration(8500)
+                                        .maxAcceleration(7000)
                                         .allowedClosedLoopError(0.5);
 
                         // elevator2Config.closedLoop
@@ -96,8 +96,8 @@ public class Configs {
                                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                                         .p(0.2)
                                         .outputRange(-1, 1).maxMotion
-                                        .maxVelocity(100)
-                                        .maxAcceleration(100)
+                                        .maxVelocity(2000)
+                                        .maxAcceleration(2000)
                                         .allowedClosedLoopError(0.5);
 
                 }

@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -19,7 +20,7 @@ public class ArmSubsystem extends SubsystemBase {
     private RelativeEncoder m_ArmEncoder = m_Arm.getEncoder();
 
     // Setup the second Elevator Motor
-    private SparkMax m_Wheels = new SparkMax(ArmConstants.kWheelsCanId, MotorType.kBrushless);
+    private SparkFlex m_Wheels = new SparkFlex(ArmConstants.kWheelsCanId, MotorType.kBrushless);
 
     /** Creates a new ElevatorSubsystem. */
     public ArmSubsystem() {
