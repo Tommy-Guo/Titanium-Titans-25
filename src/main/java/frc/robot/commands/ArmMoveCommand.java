@@ -11,6 +11,7 @@ public class ArmMoveCommand extends Command {
     public ArmMoveCommand(ArmSubsystem s_ArmSubsystem, double Setpoint) {
         this.s_ArmSubsystem = s_ArmSubsystem;
         this.Setpoint = Setpoint;
+        addRequirements(s_ArmSubsystem);
     }
     
     @Override

@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.subsystems;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkMax;
@@ -10,12 +11,14 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ElevatorConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  
+
   private SparkMax m_elevator1 = new SparkMax(ElevatorConstants.kElevator1CanId, MotorType.kBrushless);
   private SparkClosedLoopController m_elevator1Controller = m_elevator1.getClosedLoopController();
   private RelativeEncoder m_elevator1Encoder = m_elevator1.getEncoder();
@@ -27,22 +30,20 @@ public class ElevatorSubsystem extends SubsystemBase {
   public ElevatorSubsystem() {
 
     m_elevator1.configure(
-      Configs.ElevatorSubsystem.elevator1Config,
-      ResetMode.kResetSafeParameters,
-      PersistMode.kPersistParameters
-    );
+        Configs.ElevatorSubsystem.elevator1Config,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     m_elevator2.configure(
-      Configs.ElevatorSubsystem.elevator2Config,
-      ResetMode.kResetSafeParameters,
-      PersistMode.kPersistParameters
-    );
+        Configs.ElevatorSubsystem.elevator2Config,
+        ResetMode.kResetSafeParameters,
+        PersistMode.kPersistParameters);
 
     m_elevator1Encoder.setPosition(0);
     m_elevator2Encoder.setPosition(0);
 
   }
-  
+
   public void moveElevatorToPosition(double Setpoint) {
     m_elevator1Controller.setReference(Setpoint, ControlType.kMAXMotionPositionControl);
     m_elevator2Controller.setReference(Setpoint, ControlType.kMAXMotionPositionControl);
@@ -68,6 +69,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    
+    SmartDashboard.putNumber("Elevator Position: ", getElevator1Position());
   }
 }

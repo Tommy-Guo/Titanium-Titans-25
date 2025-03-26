@@ -79,7 +79,6 @@ public class Configs {
                                         .inverted(false);
 
                 }
-
         }
 
         public static final class ArmSubsystem {
@@ -96,8 +95,8 @@ public class Configs {
                                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                                         .p(0.2)
                                         .outputRange(-1, 1).maxMotion
-                                        .maxVelocity(2000)
-                                        .maxAcceleration(2000)
+                                        .maxVelocity(3000)
+                                        .maxAcceleration(4500)
                                         .allowedClosedLoopError(0.5);
 
                 }

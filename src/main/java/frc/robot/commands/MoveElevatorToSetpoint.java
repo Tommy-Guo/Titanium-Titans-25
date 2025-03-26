@@ -18,6 +18,7 @@ public class MoveElevatorToSetpoint extends Command {
         // Use addRequirements() here to declare subsystem dependencies.
         this.s_ElevatorSubsystem = s_ElevatorSubsystem;
         this.Setpoint = Setpoint;
+        addRequirements(s_ElevatorSubsystem);
     }
 
     // Called when the command is initially scheduled.

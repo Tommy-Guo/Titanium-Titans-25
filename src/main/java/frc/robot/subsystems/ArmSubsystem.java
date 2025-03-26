@@ -8,6 +8,8 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Configs;
 import frc.robot.Constants.ArmConstants;
@@ -34,7 +36,7 @@ public class ArmSubsystem extends SubsystemBase {
                 Configs.ArmSubsystem.wheelMotor,
                 ResetMode.kResetSafeParameters,
                 PersistMode.kPersistParameters);
-                
+
         m_ArmEncoder.setPosition(0);
 
     }
@@ -71,6 +73,6 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-
+        SmartDashboard.putNumber("Arm Position: ", getArmPosition());
     }
 }
