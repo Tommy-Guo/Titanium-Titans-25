@@ -10,10 +10,8 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -29,7 +27,6 @@ import frc.robot.commands.ArmWheelSpinCommand;
 import frc.robot.commands.DistanceDriveCommand;
 import frc.robot.commands.MoveElevatorToSetpoint;
 import frc.robot.commands.MoveIntakeCommand;
-import frc.robot.commands.TimedDriveCommand;
 import frc.robot.commands.TimedIntakeCommand;
 
 public class RobotContainer {
@@ -83,18 +80,24 @@ public class RobotContainer {
                                         new MoveElevatorToSetpoint(s_ElevatorSubsystem, 190),
                                         new MoveElevatorToSetpoint(s_ElevatorSubsystem, setpoint));
                 } else {
-                        if (currentPosition < setpoint) {
-                                // Moving up: Use an intermediate setpoint
-                                double intermediateSetpoint = (currentPosition + setpoint) / 2.0;
+                        if ((setpoint - currentPosition) < 0) {
                                 return new SequentialCommandGroup(
                                                 new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
-                                                new MoveElevatorToSetpoint(s_ElevatorSubsystem, intermediateSetpoint),
                                                 new MoveElevatorToSetpoint(s_ElevatorSubsystem, setpoint));
                         } else {
-                                // Moving down: Go directly to the final setpoint
-                                return new SequentialCommandGroup(
-                                                new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
-                                                new MoveElevatorToSetpoint(s_ElevatorSubsystem, setpoint));
+                                double intermediateSetpoint = setpoint / 2.0;
+                                if ((setpoint - intermediateSetpoint) > 50) {
+                                        return new SequentialCommandGroup(
+                                                        new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
+                                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem,
+                                                                        intermediateSetpoint),
+                                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem, setpoint));
+                                } else {
+                                        return new SequentialCommandGroup(
+                                                        new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
+                                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem, setpoint));
+                                }
+
                         }
                 }
 
@@ -152,7 +155,7 @@ public class RobotContainer {
                 return new TimedIntakeCommand(s_IntakeSubsystem, -0.2, 3);
         }
 
-        private final int REEF_DISTANCE = 85;
+        private final double REEF_DISTANCE = 73.5;
 
         public Command getAutonomousCommand() {
                 m_autoSelected = m_chooser.getSelected();
@@ -161,7 +164,7 @@ public class RobotContainer {
                                 return null; // Do fucking nothing at all.
                         case auto_TaxiOut:
                                 return new SequentialCommandGroup(
-                                                new DistanceDriveCommand(drivebase, new Translation2d(-1, 0), 40, 0.3));
+                                                new DistanceDriveCommand(drivebase, new Translation2d(-1, 0), 40, 0.4));
                         case auto_Level1:
                                 return new SequentialCommandGroup(
                                                 new DistanceDriveCommand(drivebase, new Translation2d(-1, 0),
@@ -185,7 +188,7 @@ public class RobotContainer {
                                                 generateElevatorCommand(ElevatorConstants.kLevel0));
                         case auto_Level4:
                                 return new SequentialCommandGroup(
-                                                new DistanceDriveCommand(drivebase, new Translation2d(-1, 0), 80, 0.3),
+                                                new DistanceDriveCommand(drivebase, new Translation2d(-1, 0), 69.5, 0.4),
                                                 generateElevatorCommand(ElevatorConstants.kLevel4),
                                                 scoreCoral(),
                                                 generateElevatorCommand(ElevatorConstants.kLevel0),

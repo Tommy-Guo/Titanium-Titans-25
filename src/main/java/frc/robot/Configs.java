@@ -95,8 +95,8 @@ public class Configs {
                                         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
                                         .p(0.2)
                                         .outputRange(-1, 1).maxMotion
-                                        .maxVelocity(3000)
-                                        .maxAcceleration(4500)
+                                        .maxVelocity(4500)
+                                        .maxAcceleration(5000)
                                         .allowedClosedLoopError(0.5);
 
                 }
