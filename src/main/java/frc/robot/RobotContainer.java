@@ -75,21 +75,29 @@ public class RobotContainer {
                 DriverStation.silenceJoystickConnectionWarning(true);
         }
 
-        private SequentialCommandGroup safeElevatorMove(double Level) {
-                if (Level == ElevatorConstants.kLevel4) {
+        public SequentialCommandGroup generateElevatorCommand(double setpoint) {
+                double currentPosition = s_ElevatorSubsystem.getElevator1Position();
+
+                if (setpoint == ElevatorConstants.kLevel4) {
                         return new SequentialCommandGroup(new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
                                         new MoveElevatorToSetpoint(s_ElevatorSubsystem, 190),
-                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem, Level));
+                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem, setpoint));
                 } else {
-                        return new SequentialCommandGroup(new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
-                                        new MoveElevatorToSetpoint(s_ElevatorSubsystem, Level));
+                        if (currentPosition < setpoint) {
+                                // Moving up: Use an intermediate setpoint
+                                double intermediateSetpoint = (currentPosition + setpoint) / 2.0;
+                                return new SequentialCommandGroup(
+                                                new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
+                                                new MoveElevatorToSetpoint(s_ElevatorSubsystem, intermediateSetpoint),
+                                                new MoveElevatorToSetpoint(s_ElevatorSubsystem, setpoint));
+                        } else {
+                                // Moving down: Go directly to the final setpoint
+                                return new SequentialCommandGroup(
+                                                new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
+                                                new MoveElevatorToSetpoint(s_ElevatorSubsystem, setpoint));
+                        }
                 }
-        }
 
-        private SequentialCommandGroup safeGoDown() {
-                return new SequentialCommandGroup(new ArmMoveCommand(s_ArmSubsystem, ArmConstants.armSafe),
-                                new MoveElevatorToSetpoint(s_ElevatorSubsystem, ElevatorConstants.kLevel1),
-                                new MoveElevatorToSetpoint(s_ElevatorSubsystem, ElevatorConstants.kLevel0));
         }
 
         private void configureBindings() {
@@ -98,17 +106,15 @@ public class RobotContainer {
                 drivebase.setDefaultCommand(testDrive);
                 if (s_ElevatorSubsystem != null) {
                         driver_controller.start().onTrue(
-                                        safeElevatorMove(ElevatorConstants.kLevel0));
+                                        generateElevatorCommand(ElevatorConstants.kLevel0));
                         driver_controller.x().onTrue(
-                                        safeElevatorMove(ElevatorConstants.kLevel1));
+                                        generateElevatorCommand(ElevatorConstants.kLevel1));
                         driver_controller.y().onTrue(
-                                        safeElevatorMove(ElevatorConstants.kLevel2));
+                                        generateElevatorCommand(ElevatorConstants.kLevel2));
                         driver_controller.b().onTrue(
-                                        safeElevatorMove(ElevatorConstants.kLevel3));
+                                        generateElevatorCommand(ElevatorConstants.kLevel3));
                         driver_controller.a().onTrue(
-                                        new SequentialCommandGroup(
-                                                        safeElevatorMove(190),
-                                                        safeElevatorMove(ElevatorConstants.kLevel4)));
+                                        generateElevatorCommand(ElevatorConstants.kLevel4));
                 }
 
                 if (s_IntakeSubsystem != null) {
@@ -142,6 +148,12 @@ public class RobotContainer {
                 }));
         }
 
+        public Command scoreCoral() {
+                return new TimedIntakeCommand(s_IntakeSubsystem, -0.2, 3);
+        }
+
+        private final int REEF_DISTANCE = 85;
+
         public Command getAutonomousCommand() {
                 m_autoSelected = m_chooser.getSelected();
                 switch (m_autoSelected) {
@@ -149,33 +161,34 @@ public class RobotContainer {
                                 return null; // Do fucking nothing at all.
                         case auto_TaxiOut:
                                 return new SequentialCommandGroup(
-                                                new DistanceDriveCommand(drivebase, new Translation2d(-1, 0), 80, 0.3));
+                                                new DistanceDriveCommand(drivebase, new Translation2d(-1, 0), 40, 0.3));
                         case auto_Level1:
                                 return new SequentialCommandGroup(
-                                                new TimedDriveCommand(drivebase, new Translation2d(0.7, 0), 3),
-                                                safeElevatorMove(ElevatorConstants.kLevel1),
-                                                new TimedIntakeCommand(s_IntakeSubsystem, -0.2, 3),
-                                                safeGoDown());
+                                                new DistanceDriveCommand(drivebase, new Translation2d(-1, 0),
+                                                                REEF_DISTANCE, 0.3),
+                                                generateElevatorCommand(ElevatorConstants.kLevel1),
+                                                scoreCoral(),
+                                                generateElevatorCommand(ElevatorConstants.kLevel0));
                         case auto_Level2:
                                 return new SequentialCommandGroup(
-                                                new TimedDriveCommand(drivebase, new Translation2d(0.7, 0), 3),
-                                                safeElevatorMove(ElevatorConstants.kLevel2),
-                                                new TimedIntakeCommand(s_IntakeSubsystem, -0.2, 3),
-                                                safeGoDown());
+                                                new DistanceDriveCommand(drivebase, new Translation2d(-1, 0),
+                                                                REEF_DISTANCE, 0.3),
+                                                generateElevatorCommand(ElevatorConstants.kLevel2),
+                                                scoreCoral(),
+                                                generateElevatorCommand(ElevatorConstants.kLevel0));
                         case auto_Level3:
                                 return new SequentialCommandGroup(
-                                                new TimedDriveCommand(drivebase, new Translation2d(0.7, 0), 3),
-                                                safeElevatorMove(ElevatorConstants.kLevel3),
-                                                new WaitCommand(1),
-                                                new TimedIntakeCommand(s_IntakeSubsystem, -0.2, 3),
-                                                safeGoDown());
+                                                new DistanceDriveCommand(drivebase, new Translation2d(-1, 0),
+                                                                REEF_DISTANCE, 0.3),
+                                                generateElevatorCommand(ElevatorConstants.kLevel3),
+                                                scoreCoral(),
+                                                generateElevatorCommand(ElevatorConstants.kLevel0));
                         case auto_Level4:
                                 return new SequentialCommandGroup(
                                                 new DistanceDriveCommand(drivebase, new Translation2d(-1, 0), 80, 0.3),
-                                                safeElevatorMove(ElevatorConstants.kLevel4),
-                                                new TimedIntakeCommand(s_IntakeSubsystem, -0.2, 3),
-                                                new MoveIntakeCommand(s_IntakeSubsystem, 0),
-                                                safeGoDown(),
+                                                generateElevatorCommand(ElevatorConstants.kLevel4),
+                                                scoreCoral(),
+                                                generateElevatorCommand(ElevatorConstants.kLevel0),
                                                 new DistanceDriveCommand(drivebase, new Translation2d(1, 0), 10, 0.3));
                         default:
                                 return null;
